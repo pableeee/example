@@ -7,3 +7,4 @@ local.mk
 build
 logs/**
 !.gitkeep
+example

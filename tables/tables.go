@@ -11,13 +11,16 @@ import "github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
 //
 // example:
 //
-// "users"   => http://localhost:9033/admin/info/users
+// "usuarios"   => http://localhost:9033/admin/info/usuarios
 // "posts"   => http://localhost:9033/admin/info/posts
 // "authors" => http://localhost:9033/admin/info/authors
 //
 var Generators = map[string]table.Generator{
-	"posts":   GetPostsTable,
-	"users":   GetUserTable,
-	"authors": GetAuthorsTable,
-	"profile": GetProfileTable,
+	"posts":     GetPostsTable,
+	"users":     GetUserTable,
+	"authors":   GetAuthorsTable,
+	"profile":   GetProfileTable,
+	"usuarios":  GetUsuariosTable,
+	"contactos": GetContactoTable,
+	"plantas":   GetPlantasTable,
 }
