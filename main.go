@@ -9,9 +9,13 @@ import (
 	"os/signal"
 	"time"
 
-	_ "github.com/GoAdminGroup/go-admin/adapter/gin"               // web framework adapter
-	_ "github.com/GoAdminGroup/go-admin/modules/db/drivers/sqlite" // sql driver
-	_ "github.com/GoAdminGroup/themes/adminlte"                    // ui theme
+	_ "github.com/GoAdminGroup/go-admin/adapter/gin" // web framework adapter
+	"github.com/GoAdminGroup/go-admin/modules/config"
+	"github.com/GoAdminGroup/go-admin/modules/db"
+	_ "github.com/GoAdminGroup/go-admin/modules/db/drivers/mysql"  // mysql driver
+	_ "github.com/GoAdminGroup/go-admin/modules/db/drivers/sqlite" // sqlite driver
+	"github.com/GoAdminGroup/go-admin/modules/language"
+	_ "github.com/GoAdminGroup/themes/adminlte" // ui theme
 
 	"github.com/GoAdminGroup/example/models"
 	"github.com/GoAdminGroup/example/pages"
@@ -36,33 +40,46 @@ func startServer() {
 
 	template.AddComp(chartjs.NewChart())
 
-	//cfg := config.Config{
-	//	Databases: config.DatabaseList{
-	//		"default": {
-	//			Host:       "127.0.0.1",
-	//			Port:       "3306",
-	//			User:       "root",
-	//			Pwd:        "root",
-	//			Name:       "go-admin",
-	//			MaxIdleCon: 50,
-	//			MaxOpenCon: 150,
-	//			Driver:     db.DriverMysql,
-	//		},
-	//	},
-	//	UrlPrefix: "admin",
-	//	IndexUrl:  "/",
-	//	Debug:     true,
-	//	Language:  language.CN,
-	//}
+	cfg := config.Config{
+		Databases: config.DatabaseList{
+			"default": {
+				File:       "./admin.db",
+				MaxIdleCon: 50,
+				MaxOpenCon: 150,
+				Driver:     db.DriverSqlite,
+			}, "mysql": {
+				Host:       "127.0.0.1",
+				Port:       "57905",
+				User:       "root",
+				Pwd:        "my-secret-pw",
+				Name:       "asp",
+				MaxIdleCon: 50,
+				MaxOpenCon: 150,
+				Driver:     db.DriverMysql,
+			},
+		},
+		UrlPrefix:          "admin",
+		IndexUrl:           "/",
+		Debug:              true,
+		Language:           language.EN,
+		AccessLogPath:      "./logs/access.log",
+		ErrorLogPath:       "./logs/error.log",
+		InfoLogPath:        "./logs/info.log",
+		AccessAssetsLogOff: true,
+		Theme:              "adminlte",
+		BootstrapFilePath:  "./bootstrap.go",
+		ColorScheme:        "skin-black",
+	}
 
-	if err := eng.AddConfigFromJSON("./config.json").
+	if err := eng.AddConfig(&cfg).
 		AddGenerators(tables.Generators).
 		AddGenerator("external", tables.GetExternalTable).
 		Use(r); err != nil {
 		panic(err)
 	}
 
-	models.Init(eng.SqliteConnection())
+	models.InitLite(eng.SqliteConnection())
+	models.InitMysql(eng.MysqlConnection())
 
 	r.Static("/uploads", "./uploads")
 

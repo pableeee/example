@@ -32,6 +32,13 @@ func GetUserTable(ctx *context.Context) (userTable table.Table) {
 		},
 	})
 
+	buildInfo(userTable)
+	buildForm(userTable)
+
+	return
+}
+
+func buildInfo(userTable table.Table) {
 	info := userTable.GetInfo().SetFilterFormLayout(form.LayoutThreeCol)
 	info.AddField("ID", "id", db.Int).FieldSortable()
 	info.AddField("Name", "name", db.Varchar).FieldEditAble(editType.Text).
@@ -95,7 +102,9 @@ func GetUserTable(ctx *context.Context) (userTable table.Table) {
 	}, action.FieldFilter("gender"))
 
 	info.SetTable("users").SetTitle("Users").SetDescription("Users")
+}
 
+func buildForm(userTable table.Table) {
 	formList := userTable.GetForm()
 	formList.AddField("ID", "id", db.Int, form.Default).FieldNotAllowEdit().FieldNotAllowAdd()
 	formList.AddField("Ip", "ip", db.Varchar, form.Text)
@@ -179,6 +188,4 @@ func GetUserTable(ctx *context.Context) (userTable table.Table) {
 		fmt.Println("userTable.GetForm().PostHook", values)
 		return nil
 	})
-
-	return
 }
